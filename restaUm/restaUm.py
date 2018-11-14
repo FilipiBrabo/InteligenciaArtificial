@@ -1,31 +1,48 @@
 from copy import copy, deepcopy
 
 # # BFS
-# def buscaLargura(estados):
-#     estados’ = []
-#     for s in estados:
-#         s’ = [resultado(s, a) for a in acoes(s)]
-#         estados’ = estados’ + s’
-#     if any(atingiuObj(s) for s in estados’)
-#         return solucao(estados’)
-#     return buscaLargura(estados’)
+def buscaLargura(estados):
+    estados_new = []
+    for s in estados:
+        s_new = [resultado(s, a) for a in acoes(s)]
+        estados_new = estados_new + s_new
+    if any(atingiuObj(s) for s in estados_new)
+        return solucao(estados_new)
+    return buscaLargura(estados_new)
 
+# Gera um novo estado a partir de uma ação a
 def resultado(s, a):
-    pass
+   s_new = deepcopy(s)
+   pos, acao = a
+   i, j = pos
+   s_new[i][j] = 'X'
+   if movimentos[acao] == 'up':
+       s_new[i-1][j] = 'X'
+       s_new[i-2][j] = 'O'
+   elif movimentos[acao] == 'left':
+       s_new[i][j-1] = 'X'
+       s_new[i][j-2] = 'O'
+   elif movimentos[acao] == 'down':
+       s_new[i+1][j] = 'X'
+       s_new[i+2][j] = 'O'
+   else:
+       s_new[i][j+1] = 'X'
+       s_new[i][j+2] = 'O'	
+   return s_new
 
 movimentos = {0:'left', 1: 'down', 2:'direita', 3:'up'}
 
-def acoes(s):
-    acoes = []
-    for i in range(len(s)):
-        for j in range(len(s[i])):
-            pos = (i, j)
-            a = acoesFactiveis(s, pos)
-            if a:
-                acoes.append(a)
-    return acoes
+# Retorna todas as ações possíveis de um estado s
+#def acoes(s):
+#    acoes = []
+#    for i in range(len(s)):
+#        for j in range(len(s[i])):
+#            pos = (i, j)
+#            for a in acoesFactiveis(s, pos): 
+#                acoes.append(a)
+#    return acoes
 
-#retorna acoes factveis para uma posicao pos em um dado estado s
+# Retorna acoes factveis para uma posicao pos em um dado estado s
 def acoesFactiveis(s, pos):
     acoes = []
     i, j = pos
@@ -35,31 +52,26 @@ def acoesFactiveis(s, pos):
         # Left
         if m == 0 and j-2 < len(s):
             if s[i][j-1] == 'O' and s[i][j-2] == 'X':
-                a = pos, n
+                a = (pos, m)
                 acoes.append(a)
         # Down
-        elif m == 1 and i-2 < len(s):
-            if s[i-1][j] == 'O' and s[i-2][j] == 'X':
-                a = pos, n
+        elif m == 1 and i+2 < len(s):
+            if s[i+1][j] == 'O' and s[i+2][j] == 'X':
+                a = (pos, m)
                 acoes.append(a)
         # Right
         elif m == 2 and j+2 < len(s):
             if s[i][j+1] == 'O' and s[i][j+2] == 'X':
-                a = pos, n
+                a = (pos, m)
                 acoes.append(a)
         # Up
-        elif m == 3 and i+2 < len(s):
-            if s[i+1][j] == 'O' and s[i+2][j] == 'X':
-                a = pos, n
+        elif m == 3 and i-2 < len(s):
+            if s[i-1][j] == 'O' and s[i-2][j] == 'X':
+                a = (pos, m)
                 acoes.append(a)    
-    return acoes
-            
-                
-            
-
-
-
-
+    return acoes        
+                   
+# Verifica se um estado s é objetivo
 def atingiuObj(s):
     contaPeca = 0
     for i in range(len(s)):
@@ -92,8 +104,10 @@ def main():
           ['-', '-', 'O', 'O', 'O', '-', '-']]
     
     #printEstado(s1)
-    printEstado(s0)
+    #printEstado(s0)
     # print(atingiuObj(s0))
-    print(acoes(s0))
-    
+       
+
 main()
+
+    print(bfs(s0))
