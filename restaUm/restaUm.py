@@ -15,9 +15,8 @@ def buscaAStar(sts):
             sts.append(s)
             la.append(la[ind_melhor] + [a])
 
-        ind = sts.index(st)
         sts.remove(st)
-        la.remove(la[ind])
+        la.remove(la[sts.index(st)])
         n   = n + len(sts)
         obj = list(filter(atingiuObj, sts))
     return obj[0], n, la[sts.index(obj[0])]
@@ -31,7 +30,7 @@ def buscaLargura(sts):
         new_sts = []
         for s in sts:
             new_sts = [resultado(s, a) for a in acoes(s)] + new_sts 
-        sts = sts + new_sts
+        sts = new_sts
         obj = list(filter(atingiuObj, sts))
         n   = n + len(sts)
         print(n)
