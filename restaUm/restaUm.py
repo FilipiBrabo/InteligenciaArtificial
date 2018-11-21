@@ -1,21 +1,30 @@
 from copy import deepcopy
 
 # A_STAR
-def buscaAStar(sts):    
-    obj = list(filter(atingiuObj, sts))
-    n   = 0
-    new_sts = []
+def buscaAStar(sts):
+    sts     = [sts]   
+    obj     = list(filter(atingiuObj, sts))
+    n       = 0    
+    la      = []   # Lista de açoes
+    la.append([0]) # Acão do estado inicial
     while len(obj) == 0:
-        st  = melhorNo(sts)
-        new_sts  = [resultado(st, a) for a in acoes(st)]        
-        sts = sts + new_sts
+        st  = melhorNo(sts) 
+        ind_melhor = sts.index(st)
+        for a in acoes(st):
+            s = resultado(st, a)             
+            sts.append(s)
+            la.append(la[ind_melhor] + [a])
+
+        ind = sts.index(st)
         sts.remove(st)
+        la.remove(la[ind])
         n   = n + len(sts)
-        obj = list(filter(atingiuObj, sts))         
-    return obj[0], n
+        obj = list(filter(atingiuObj, sts))
+    return obj[0], n, la[sts.index(obj[0])]
 
 #BFS
 def buscaLargura(sts):
+    sts = [sts]
     obj = list(filter(atingiuObj, sts))
     n   = 0
     while len(obj) == 0:
@@ -25,6 +34,7 @@ def buscaLargura(sts):
         sts = sts + new_sts
         obj = list(filter(atingiuObj, sts))
         n   = n + len(sts)
+        print(n)
     return obj[0], n
 
 # DFS
@@ -92,7 +102,7 @@ def resultado(st, a):
 # Retorna todas as ações possíveis de um estado st
 def acoes(st):
     s, score = st
-    acoes = []
+    acoes    = []
     for i in range(len(s)):
         for j in range(len(s[i])):
             pos = (i, j)
@@ -103,8 +113,8 @@ def acoes(st):
 # Retorna acoes factveis para uma posicao pos em um dado estado s
 def acoesFactiveis(st, pos):
     s, score = st
-    acoes = []
-    i, j = pos
+    acoes    = []
+    i, j     = pos
     if  s[i][j] != 'O':
         return acoes
     for m, n in movimentos.items():
@@ -132,7 +142,7 @@ def acoesFactiveis(st, pos):
                    
 # Verifica se um estado s é objetivo
 def atingiuObj(st):
-    s, score = st
+    s, score  = st
     contaPeca = 0
     for i in range(len(s)):
         for j in range(len(s[i])):
@@ -150,53 +160,48 @@ def printEstado(st):
             print(s[i][j], end=' ')
         print()
 
-n     = 0
-count = 0
-movimentos = {0:'left', 1: 'down', 2:'direita', 3:'up'}
-
-def main():
-    # Estado inicial do tabuleiro
-    # '-' = espaços inválidos
-    # 'O' = espaços que tem uma peça
-    # 'X' = espaços vazios    
-    s0 = ([['-', '-', 'O', 'O', 'O', '-', '-'],
-          ['-', '-', 'O', 'O', 'O', '-', '-'],
-          ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
-          ['O', 'O', 'O', 'X', 'O', 'O', 'O'],
-          ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
-          ['-', '-', 'O', 'O', 'O', '-', '-'],
-          ['-', '-', 'O', 'O', 'O', '-', '-']], 0)
-    
-    a, b = s0
-    s0 = (a, heuristica(s0))
-    s = []
-    s.append(s0)
+def printBusca(b):
     lista_acoes = []
+    s0          = estadoInicial()
+    n           = 0
+    if b == "BFS":
+        estado_final, num_s = buscaLargura(s0)
+    elif b == "DFS":
+        estado_final, num_s, lista_acoes = buscaProfundidade(s0, n, lista_acoes)
+    elif b == "ASTAR":
+        estado_final, num_s, lista_acoes = buscaAStar(s0)
 
-    estado_final, num, lista_acoes = buscaProfundidade(s0, n, lista_acoes)
     print("###############################################################")
-    print("\n*****DFS*****\n")
+    print("\n*****", b,"*****\n")
     print("Estado final:")
     printEstado(estado_final)
-    print("\nNúmero de estados visitados: "), print(num) 
+    print("\nNúmero de estados visitados: "), print(num_s) 
     print("\nAções realizadas:")
     for i in range(len(lista_acoes)):
         print(i+1,". ",lista_acoes[i])
     print("###############################################################")
 
-    estado_final, num = buscaAStar(s)
-    print("\n*****A STAR*****\n")
-    print("Estado final:")
-    printEstado(estado_final)
-    print("\nNúmero de estados visitados:", num) 
-    print("###############################################################")
+def estadoInicial():
+    # Estado inicial do tabuleiro
+    # '-' = espaços inválidos
+    # 'O' = espaços que tem uma peça
+    # 'X' = espaços vazios    
+    s0   = ([['-', '-', 'O', 'O', 'O', '-', '-'],
+             ['-', '-', 'O', 'O', 'O', '-', '-'],
+             ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
+             ['O', 'O', 'O', 'X', 'O', 'O', 'O'],
+             ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
+             ['-', '-', 'O', 'O', 'O', '-', '-'],
+             ['-', '-', 'O', 'O', 'O', '-', '-']], 0)
+    a, b = s0
+    s0   = (a, heuristica(s0))  # Atualiza o score do estado inicial
+    return s0
 
-    # estado_final, num = buscaLargura(s)
-    # print("\n*****BFS*****\n")
-    # print("Estado final:")
-    # printEstado(estado_final)
-    # print("\nNúmero de estados visitados:", num) 
-    # print("###############################################################")
+def main():
+    #printBusca("BFS") # Demora muuuito pra executar
+    printBusca("DFS")
+    printBusca("ASTAR")
 
-main()
-    
+movimentos = {0:'left', 1: 'down', 2:'direita', 3:'up'}
+
+main() 
