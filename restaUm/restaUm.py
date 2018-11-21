@@ -15,8 +15,9 @@ def buscaAStar(sts):
             sts.append(s)
             la.append(la[ind_melhor] + [a])
 
+        ind = sts.index(st)
         sts.remove(st)
-        la.remove(la[sts.index(st)])
+        la.remove(la[ind])
         n   = n + len(sts)
         obj = list(filter(atingiuObj, sts))
     return obj[0], n, la[sts.index(obj[0])]
